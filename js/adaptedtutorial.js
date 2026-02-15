@@ -1,32 +1,33 @@
-/* Adapted tutorial: load MegaCities.geojson with fetch and map it */
+/* Map of GeoJSON data from MegaCities.geojson (adapted tutorial) */
 
-//declare map in global scope so other functions can use it
+//declare map var in global scope
 var map;
 
-//create the leaflet map
+//function to instantiate the Leaflet map
 function createMap() {
-  //set starting view (world view like the example)
-  map = L.map("map", {
+
+  //create the map
+  map = L.map('map', {
     center: [20, 0],
     zoom: 2
   });
 
-  //add OSM basemap tiles
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
+  //add OSM base tilelayer
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
-  //load the geojson after the map is ready
+  //call getData function
   getData();
 }
 
-//run once for each feature to attach popup
+//added…function to attach popups to each mapped feature
 function onEachFeature(feature, layer) {
+  //no popupContent field in MegaCities, so build it from all properties
   var popupContent = "";
 
-  //loop through all properties and build a popup string
   if (feature.properties) {
+    //loop through each property and add it to the popup html
     for (var property in feature.properties) {
       popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
     }
@@ -34,15 +35,17 @@ function onEachFeature(feature, layer) {
   }
 }
 
-//fetch the data and add it to the map
+//function to retrieve the data and place it on the map
 function getData() {
+
+  //load the data
   fetch("data/MegaCities.geojson")
     .then(function (response) {
       return response.json();
     })
     .then(function (json) {
 
-      //circle marker styling (from the tutorial)
+      //create marker options (circle markers)
       var geojsonMarkerOptions = {
         radius: 8,
         fillColor: "#ff7800",
@@ -52,20 +55,17 @@ function getData() {
         fillOpacity: 0.8
       };
 
-      //add geojson to map
-      L.geoJSON(json, {
-        //turn points into circleMarkers
+      //create a Leaflet GeoJSON layer and add it to the map
+      L.geoJson(json, {
+        //turn each point into a circle marker
         pointToLayer: function (feature, latlng) {
           return L.circleMarker(latlng, geojsonMarkerOptions);
         },
         //attach popups
         onEachFeature: onEachFeature
       }).addTo(map);
-    })
-    .catch(function (error) {
-      console.log("error loading MegaCities.geojson:", error);
     });
 }
 
-//wait until the page loads, then build the map
-document.addEventListener("DOMContentLoaded", createMap);
+//run after the page loads
+document.addEventListener('DOMContentLoaded', createMap);

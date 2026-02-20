@@ -1,39 +1,67 @@
-// main.js
-// building my leaflet map for the lab dataset
+/* Activity 5 - main Leaflet map using GeoJSON */
 
-// create the map
-var map = L.map("map").setView([43.0731, -89.4012], 11);
+var map;
 
-// add basemap
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-// load my GeoJSON
-fetch("data/yourData.geojson")
-  .then(function(response) {
-    return response.json();
-  })
-  .then(function(data) {
-
-    var geojsonLayer = L.geoJSON(data, {
-      onEachFeature: function(feature, layer) {
-
-        var props = feature.properties;
-
-        var popupContent = "<b>Record</b>";
-
-        for (var key in props) {
-          popupContent += "<br>" + key + ": " + props[key];
-        }
-
-        layer.bindPopup(popupContent);
-      }
-    }).addTo(map);
-
-    map.fitBounds(geojsonLayer.getBounds());
-  })
-  .catch(function(error) {
-    console.log("error loading geojson:", error);
+//make the map
+function createMap() {
+  map = L.map("map", {
+    center: [20, 0],
+    zoom: 2
   });
+
+  //basemap tiles
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  //loads my data
+  getData();
+}
+
+//popup for each feature
+function onEachFeature(feature, layer) {
+  var props = feature.properties;
+
+  //basic header
+  var popupContent = "<strong>" + props.city + "</strong><br>" + props.country;
+
+  //add all population fields
+  for (var property in props) {
+    if (property.indexOf("Pop_") === 0) {
+      popupContent += "<br>" + property + ": " + props[property];
+    }
+  }
+
+  layer.bindPopup(popupContent);
+}
+
+//fetch the geojson and add to map
+function getData() {
+  fetch("data/worldCitiesPop.geojson")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (json) {
+
+      //circle marker points style
+      var geojsonMarkerOptions = {
+        radius: 7,
+        fillOpacity: 0.8,
+        weight: 1
+      };
+
+      L.geoJSON(json, {
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: onEachFeature
+      }).addTo(map);
+    })
+    .catch(function (error) {
+      console.log("error loading geojson:", error);
+    });
+}
+
+//run once the page loads
+document.addEventListener("DOMContentLoaded", createMap);

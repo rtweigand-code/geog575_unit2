@@ -1,67 +1,79 @@
-/* Activity 5 - main Leaflet map using GeoJSON */
+/* Activity 5 - loading my global cities population dataset */
 
 var map;
 
-//make the map
+// create the map and add basemap
 function createMap() {
+
+  // start centered on the world
   map = L.map("map", {
     center: [20, 0],
     zoom: 2
   });
 
-  //basemap tiles
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  // using a lighter basemap so it’s less cluttered
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(map);
 
-  //loads my data
+  // call function to load my geojson data
   getData();
 }
 
-//popup for each feature
+// function to attach popup content to each city
 function onEachFeature(feature, layer) {
+
   var props = feature.properties;
 
-  //basic header
+  // start popup with city name + country
   var popupContent = "<strong>" + props.city + "</strong><br>" + props.country;
 
-  //add all population fields
+  // loop through population fields and add them to popup
   for (var property in props) {
     if (property.indexOf("Pop_") === 0) {
       popupContent += "<br>" + property + ": " + props[property];
     }
   }
 
+  // bind popup to the circle marker
   layer.bindPopup(popupContent);
+
+  // show city name on hover so it’s easier to see what’s what
+  layer.bindTooltip(props.city);
 }
 
-//fetch the geojson and add to map
+// load the geojson file and add it to the map
 function getData() {
+
   fetch("data/worldCitiesPop.geojson")
     .then(function (response) {
       return response.json();
     })
     .then(function (json) {
 
-      //circle marker points style
+      // simple circle styling for now (will scale later in Activity 6)
       var geojsonMarkerOptions = {
-        radius: 7,
+        radius: 10,
         fillOpacity: 0.8,
         weight: 1
       };
 
-      L.geoJSON(json, {
+      var citiesLayer = L.geoJSON(json, {
         pointToLayer: function (feature, latlng) {
           return L.circleMarker(latlng, geojsonMarkerOptions);
         },
         onEachFeature: onEachFeature
       }).addTo(map);
+
+      // zoom map to fit all 15 cities automatically
+      map.fitBounds(citiesLayer.getBounds(), { padding: [30, 30] });
+
     })
     .catch(function (error) {
       console.log("error loading geojson:", error);
     });
 }
 
-//run once the page loads
+// run everything once page finishes loading
 document.addEventListener("DOMContentLoaded", createMap);

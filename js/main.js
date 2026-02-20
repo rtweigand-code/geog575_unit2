@@ -1,4 +1,4 @@
-/* Activity 5 - loading my global cities population dataset */
+/* Activity 5 - loading my global cities population dataset w leaflet */
 
 var map;
 
@@ -52,7 +52,7 @@ function getData() {
     })
     .then(function (json) {
 
-      // simple circle styling for now (will scale later in Activity 6)
+      // circle point styling
       var geojsonMarkerOptions = {
         radius: 10,
         fillOpacity: 0.8,
@@ -66,7 +66,7 @@ function getData() {
         onEachFeature: onEachFeature
       }).addTo(map);
 
-      // zoom map to fit all 15 cities automatically
+      // zoom map to fit all 15 cities
       map.fitBounds(citiesLayer.getBounds(), { padding: [30, 30] });
 
     })

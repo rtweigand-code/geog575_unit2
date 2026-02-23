@@ -1,6 +1,9 @@
-/* Activity 5 - loading my global cities population dataset w leaflet */
+/* Activity 6 - proportional symbols + retrieve popups + sequence controls */
 
 var map;
+var attributes = [];
+var minValue = 0;
+var citiesLayer; // store the geojson layer so we can update it
 
 // create the map and add basemap
 function createMap() {
@@ -17,33 +20,171 @@ function createMap() {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(map);
 
-  // call function to load my geojson data
+  // load my geojson data
   getData();
 }
 
-// function to attach popup content to each city
-function onEachFeature(feature, layer) {
+// build an attributes array from the data (Pop_**** fields)
+function processData(data) {
 
-  var props = feature.properties;
+  var props = data.features[0].properties;
 
-  // start popup with city name + country
-  var popupContent = "<strong>" + props.city + "</strong><br>" + props.country;
-
-  // loop through population fields and add them to popup
-  for (var property in props) {
-    if (property.indexOf("Pop_") === 0) {
-      popupContent += "<br>" + property + ": " + props[property];
+  for (var attribute in props) {
+    if (attribute.indexOf("Pop_") === 0) {
+      attributes.push(attribute);
     }
   }
 
-  // bind popup to the circle marker
-  layer.bindPopup(popupContent);
-
-  // show city name on hover so it’s easier to see what’s what
-  layer.bindTooltip(props.city);
+  return attributes;
 }
 
-// load the geojson file and add it to the map
+// get the minimum value across all Pop_ fields (needed for flannery scaling)
+function calcMinValue(data) {
+
+  var allValues = [];
+
+  for (var feature of data.features) {
+    for (var attr of attributes) {
+      var value = Number(feature.properties[attr]);
+      if (!isNaN(value)) {
+        allValues.push(value);
+      }
+    }
+  }
+
+  minValue = Math.min(...allValues);
+}
+
+// flannery scaling (same formula as workbook)
+function calcPropRadius(attValue) {
+  var minRadius = 5;
+  var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
+  return radius;
+}
+
+// build popup html for current attribute
+function buildPopupContent(props, attribute) {
+
+  var popupContent = "<p><b>" + props.city + "</b><br>" + props.country + "</p>";
+
+  var year = attribute.split("_")[1];
+  popupContent += "<p><b>Population " + year + ":</b> " + props[attribute] + "</p>";
+
+  return popupContent;
+}
+
+// convert each point to a circle marker w proportional radius + popup
+function pointToLayer(feature, latlng, attributes) {
+
+  // start with the first attribute in the sequence
+  var attribute = attributes[0];
+  var props = feature.properties;
+
+  var options = {
+    fillColor: "#2c7fb8",
+    color: "#000",
+    weight: 1,
+    fillOpacity: 0.8
+  };
+
+  var attValue = Number(props[attribute]);
+  options.radius = calcPropRadius(attValue);
+
+  var layer = L.circleMarker(latlng, options);
+
+  // retrieve popup
+  var popupContent = buildPopupContent(props, attribute);
+
+  layer.bindPopup(popupContent, {
+    offset: new L.Point(0, -options.radius)
+  });
+
+  return layer;
+}
+
+// add the geojson layer to the map
+function createPropSymbols(data, attributes) {
+
+  citiesLayer = L.geoJSON(data, {
+    pointToLayer: function (feature, latlng) {
+      return pointToLayer(feature, latlng, attributes);
+    }
+  }).addTo(map);
+
+  // zoom map to fit all cities
+  map.fitBounds(citiesLayer.getBounds(), { padding: [30, 30] });
+}
+
+// update proportional symbols + popup content when sequencing
+function updatePropSymbols(attribute) {
+
+  citiesLayer.eachLayer(function (layer) {
+
+    if (layer.feature && layer.feature.properties[attribute]) {
+
+      var props = layer.feature.properties;
+
+      // update radius
+      var radius = calcPropRadius(Number(props[attribute]));
+      layer.setRadius(radius);
+
+      // update popup content
+      var popupContent = buildPopupContent(props, attribute);
+      var popup = layer.getPopup();
+      popup.setContent(popupContent);
+
+      // keep popup offset matching symbol size
+      popup.options.offset = new L.Point(0, -radius);
+    }
+  });
+}
+
+// create slider + step buttons
+function createSequenceControls(attributes) {
+
+  // slider
+  var slider = "<input class='range-slider' type='range'></input>";
+  document.querySelector("#panel").insertAdjacentHTML("beforeend", slider);
+
+  document.querySelector(".range-slider").max = attributes.length - 1;
+  document.querySelector(".range-slider").min = 0;
+  document.querySelector(".range-slider").value = 0;
+  document.querySelector(".range-slider").step = 1;
+
+  // step buttons
+  document.querySelector("#panel").insertAdjacentHTML("beforeend",
+    "<button class='step' id='reverse'>Reverse</button>");
+
+  document.querySelector("#panel").insertAdjacentHTML("beforeend",
+    "<button class='step' id='forward'>Forward</button>");
+
+  // button clicks
+  document.querySelectorAll(".step").forEach(function (step) {
+    step.addEventListener("click", function () {
+
+      var index = Number(document.querySelector(".range-slider").value);
+
+      if (step.id === "forward") {
+        index++;
+        index = index > attributes.length - 1 ? 0 : index;
+      } else if (step.id === "reverse") {
+        index--;
+        index = index < 0 ? attributes.length - 1 : index;
+      }
+
+      document.querySelector(".range-slider").value = index;
+      updatePropSymbols(attributes[index]);
+    });
+  });
+
+  // slider input
+  document.querySelector(".range-slider").addEventListener("input", function () {
+    var index = Number(this.value);
+    updatePropSymbols(attributes[index]);
+  });
+}
+
+// load the geojson file
 function getData() {
 
   fetch("data/worldCitiesPop.geojson")
@@ -52,22 +193,17 @@ function getData() {
     })
     .then(function (json) {
 
-      // circle point styling
-      var geojsonMarkerOptions = {
-        radius: 10,
-        fillOpacity: 0.8,
-        weight: 1
-      };
+      // build attributes array + min value
+      processData(json);
+      calcMinValue(json);
 
-      var citiesLayer = L.geoJSON(json, {
-        pointToLayer: function (feature, latlng) {
-          return L.circleMarker(latlng, geojsonMarkerOptions);
-        },
-        onEachFeature: onEachFeature
-      }).addTo(map);
+      // make proportional symbols + controls
+      createPropSymbols(json, attributes);
+      createSequenceControls(attributes);
 
-      // zoom map to fit all 15 cities
-      map.fitBounds(citiesLayer.getBounds(), { padding: [30, 30] });
+      // quick console check
+      console.log("sequence attributes:", attributes);
+      console.log("minValue:", minValue);
 
     })
     .catch(function (error) {

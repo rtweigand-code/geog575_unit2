@@ -21,7 +21,7 @@ body {
 
 /* Panel stays on the right */
 #panel {
-  width: 280px; /* fixed sidebar width */
+  width: 320px; /* a bit wider for the slider row */
   padding: 16px;
   box-sizing: border-box;
   background: #f7f7f7;
@@ -29,25 +29,42 @@ body {
 
   display: flex;
   flex-direction: column;
+  align-items: stretch; /* IMPORTANT: let control row span full width */
   gap: 12px;
-  align-items: center;
-  justify-content: flex-start;
 }
 
-/* Slider + buttons */
-.range-slider {
+/* popup spacing */
+.leaflet-popup-content p {
+  margin: 0.2em 0;
+}
+
+/* ===== Sequence control row (◀ slider ▶) ===== */
+
+.sequence-control {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.range-slider {
+  flex: 1;
 }
 
 .step {
-  width: 48%;
-  padding: 8px 10px;
+  width: 44px;
+  height: 36px;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
+
+  border: 1px solid #bbb;
+  background: #e9e9e9;
+  border-radius: 2px;
 }
 
-/* Popup spacing */
-.leaflet-popup-content p {
-  margin: 0.2em 0;
+.step:hover {
+  background: #dcdcdc;
 }
 
 /* Mobile-friendly fallback (panel goes below) */
@@ -60,16 +77,9 @@ body {
     width: 100%;
     border-left: none;
     border-top: 1px solid #ddd;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
   }
 
   #map {
     height: 70vh;
-  }
-
-  .range-slider {
-    width: 90%;
   }
 }

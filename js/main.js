@@ -139,30 +139,32 @@ function updatePropSymbols(attribute) {
   });
 }
 
-// create slider + step buttons
+// create slider + arrow buttons (like lab example)
 function createSequenceControls(attributes) {
 
-  // slider
-  var slider = "<input class='range-slider' type='range'></input>";
-  document.querySelector("#panel").insertAdjacentHTML("beforeend", slider);
+  // one horizontal row: [◀] [slider] [▶]
+  var controlsHTML = `
+    <div class="sequence-control">
+      <button class="step" id="reverse">&#9664;</button>
+      <input class="range-slider" type="range"></input>
+      <button class="step" id="forward">&#9654;</button>
+    </div>
+  `;
 
-  document.querySelector(".range-slider").max = attributes.length - 1;
-  document.querySelector(".range-slider").min = 0;
-  document.querySelector(".range-slider").value = 0;
-  document.querySelector(".range-slider").step = 1;
+  document.querySelector("#panel").insertAdjacentHTML("beforeend", controlsHTML);
 
-  // step buttons
-  document.querySelector("#panel").insertAdjacentHTML("beforeend",
-    "<button class='step' id='reverse'>Reverse</button>");
+  // set slider attributes
+  var slider = document.querySelector(".range-slider");
+  slider.max = attributes.length - 1;
+  slider.min = 0;
+  slider.value = 0;
+  slider.step = 1;
 
-  document.querySelector("#panel").insertAdjacentHTML("beforeend",
-    "<button class='step' id='forward'>Forward</button>");
-
-  // button clicks
+  // arrow click listeners
   document.querySelectorAll(".step").forEach(function (step) {
     step.addEventListener("click", function () {
 
-      var index = Number(document.querySelector(".range-slider").value);
+      var index = Number(slider.value);
 
       if (step.id === "forward") {
         index++;
@@ -172,15 +174,14 @@ function createSequenceControls(attributes) {
         index = index < 0 ? attributes.length - 1 : index;
       }
 
-      document.querySelector(".range-slider").value = index;
+      slider.value = index;
       updatePropSymbols(attributes[index]);
     });
   });
 
-  // slider input
-  document.querySelector(".range-slider").addEventListener("input", function () {
-    var index = Number(this.value);
-    updatePropSymbols(attributes[index]);
+  // slider input listener
+  slider.addEventListener("input", function () {
+    updatePropSymbols(attributes[Number(this.value)]);
   });
 }
 

@@ -24,7 +24,7 @@ function createMap() {
   getData();
 }
 
-// build an attributes array from the data (Pop_**** fields)
+// build an attributes array from the data (Pop_year fields)
 function processData(data) {
 
   var props = data.features[0].properties;
@@ -55,7 +55,7 @@ function calcMinValue(data) {
   minValue = Math.min(...allValues);
 }
 
-// flannery scaling (same formula as workbook)
+// flannery scaling
 function calcPropRadius(attValue) {
   var minRadius = 5;
   var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
@@ -142,7 +142,7 @@ function updatePropSymbols(attribute) {
 // create slider + arrow buttons (like lab example)
 function createSequenceControls(attributes) {
 
-  // one horizontal row: [◀] [slider] [▶]
+  // slider layout 
   var controlsHTML = `
     <div class="sequence-control">
       <button class="step" id="reverse">&#9664;</button>

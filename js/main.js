@@ -16,6 +16,7 @@ function createMap() {
     zoom: 4
   });
 
+  // light basemap so the circles stand out better
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(map);
@@ -190,7 +191,7 @@ function createSequenceControls(attributes) {
 }
 
 
-// circle legend + year legend
+// legend control
 function createLegend(initialAttribute) {
 
   var LegendControl = L.Control.extend({
@@ -207,13 +208,13 @@ function createLegend(initialAttribute) {
         '</div>' +
         '<div class="symbol-legend">' +
           '<div class="legend-title">Athletic Revenue</div>' +
-          '<svg id="attribute-legend" width="280" height="170">' +
-            '<circle class="legend-circle" id="max" cx="80"/>' +
-            '<circle class="legend-circle" id="mean" cx="80"/>' +
-            '<circle class="legend-circle" id="min" cx="80"/>' +
-            '<text id="max-text" x="145" y="40"></text>' +
-            '<text id="mean-text" x="145" y="80"></text>' +
-            '<text id="min-text" x="145" y="120"></text>' +
+          '<svg id="attribute-legend" width="250" height="170">' +
+            '<circle class="legend-circle" id="circle-top" cx="70"></circle>' +
+            '<circle class="legend-circle" id="circle-mid" cx="70"></circle>' +
+            '<circle class="legend-circle" id="circle-low" cx="70"></circle>' +
+            '<text id="text-top" x="140" y="40"></text>' +
+            '<text id="text-mid" x="140" y="85"></text>' +
+            '<text id="text-low" x="140" y="130"></text>' +
           '</svg>' +
         '</div>';
 
@@ -227,7 +228,7 @@ function createLegend(initialAttribute) {
 }
 
 
-// update both the year label and circle legend
+// update year + rounded legend circles
 function updateLegend(attribute) {
   var year = attribute.split("_")[1];
 
@@ -236,46 +237,59 @@ function updateLegend(attribute) {
     yearLabel.innerHTML = "Year: " + year;
   }
 
-  var circleValues = getCircleValues(attribute);
+  var legendValues = getRoundedLegendValues(attribute);
 
-  for (var key in circleValues) {
-    var radius = calcPropRadius(circleValues[key]);
-    var cy = 130 - radius;
+  var circleIDs = {
+    top: "circle-top",
+    mid: "circle-mid",
+    low: "circle-low"
+  };
 
-    var circle = document.getElementById(key);
+  var textIDs = {
+    top: "text-top",
+    mid: "text-mid",
+    low: "text-low"
+  };
+
+  var positions = {
+    top: 40,
+    mid: 85,
+    low: 130
+  };
+
+  for (var key in legendValues) {
+    var radius = calcPropRadius(legendValues[key]);
+    var cy = positions[key];
+
+    var circle = document.getElementById(circleIDs[key]);
     circle.setAttribute("cy", cy);
     circle.setAttribute("r", radius);
 
-    var text = document.getElementById(key + "-text");
+    var text = document.getElementById(textIDs[key]);
     text.setAttribute("y", cy + 5);
-    text.textContent = "$" + Math.round(circleValues[key]).toLocaleString();
+    text.textContent = "$" + (legendValues[key] / 1000000) + "M";
   }
 }
 
 
-// calculate values to show in legend
-function getCircleValues(attribute) {
-  var min = Infinity;
+// get rounded legend values that still update with the sequence
+function getRoundedLegendValues(attribute) {
   var max = -Infinity;
-  var total = 0;
-  var count = 0;
 
   schoolsLayer.eachLayer(function (layer) {
     var value = Number(layer.feature.properties[attribute]);
     if (!isNaN(value)) {
-      min = Math.min(min, value);
       max = Math.max(max, value);
-      total += value;
-      count++;
     }
   });
 
-  var mean = total / count;
+  // round top value up to nearest 25 million
+  var roundedMax = Math.ceil(max / 25000000) * 25000000;
 
   return {
-    max: max,
-    mean: mean,
-    min: min
+    top: roundedMax,
+    mid: Math.round((roundedMax * 0.67) / 25000000) * 25000000,
+    low: Math.round((roundedMax * 0.33) / 25000000) * 25000000
   };
 }
 

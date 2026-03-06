@@ -60,7 +60,7 @@ function calcMinValue(data) {
 
 // flannery scaling for circle sizes
 function calcPropRadius(attValue) {
-  var minRadius = 8;
+  var minRadius = 10;
   var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
   return radius;
 }
@@ -211,7 +211,7 @@ function createLegend(initialAttribute) {
         '</div>' +
         '<div class="symbol-legend">' +
           '<div class="legend-title">Athletic Revenue</div>' +
-          '<svg id="attribute-legend" width="190" height="120">' +
+          '<svg id="attribute-legend" width="190" height="140">' +
             '<circle class="legend-circle" id="max" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
             '<circle class="legend-circle" id="mean" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
             '<circle class="legend-circle" id="min" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
@@ -244,7 +244,7 @@ function updateLegend(attribute) {
 
   for (var key in circleValues) {
     var radius = calcPropRadius(circleValues[key]);
-    var cy = 95 - radius;
+    var cy = 110 - radius;
 
     var circle = document.getElementById(key);
     circle.setAttribute("cy", cy);

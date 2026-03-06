@@ -1,5 +1,5 @@
 /* Lab 1 - Big Ten athletic revenue map
-   proportional symbols + retrieve + sequence + legends */
+   proportional symbols + retrieve + sequence + clean prop symbol legend */
 
 var map;
 var attributes = [];
@@ -211,13 +211,13 @@ function createLegend(initialAttribute) {
         '</div>' +
         '<div class="symbol-legend">' +
           '<div class="legend-title">Athletic Revenue</div>' +
-          '<svg id="attribute-legend" width="260" height="140">' +
-            '<circle class="legend-circle" id="max" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
-            '<circle class="legend-circle" id="mean" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
-            '<circle class="legend-circle" id="min" fill="#c8102e" fill-opacity="0.8" stroke="#111" cx="60"/>' +
-            '<text id="max-text" x="125" y="20"></text>' +
-            '<text id="mean-text" x="125" y="45"></text>' +
-            '<text id="min-text" x="125" y="70"></text>' +
+          '<svg id="attribute-legend" width="240" height="140">' +
+            '<circle class="legend-circle" id="max" cx="60"/>' +
+            '<circle class="legend-circle" id="mean" cx="60"/>' +
+            '<circle class="legend-circle" id="min" cx="60"/>' +
+            '<text id="max-text" x="120" y="35"></text>' +
+            '<text id="mean-text" x="120" y="65"></text>' +
+            '<text id="min-text" x="120" y="95"></text>' +
           '</svg>' +
         '</div>';
 
@@ -242,21 +242,29 @@ function updateLegend(attribute) {
 
   var circleValues = getCircleValues(attribute);
 
-  // stack circles from the same baseline so it looks like a normal prop symbol legend
-  for (var key in circleValues) {
+  // keep circles stacked from one baseline like a normal proportional symbol legend
+  var bottom = 110;
 
+  for (var key in circleValues) {
     var radius = calcPropRadius(circleValues[key]);
-    var cy = 110 - radius;
+    var cy = bottom - radius;
 
     var circle = document.getElementById(key);
     circle.setAttribute("cy", cy);
     circle.setAttribute("r", radius);
 
     var text = document.getElementById(key + "-text");
-    text.setAttribute("y", cy + 5);
-    text.textContent = key.charAt(0).toUpperCase() + key.slice(1) + ": $" +
-      Math.round(circleValues[key]).toLocaleString();
 
+    // manually place labels so they read cleanly
+    if (key === "max") {
+      text.setAttribute("y", 38);
+    } else if (key === "mean") {
+      text.setAttribute("y", 68);
+    } else if (key === "min") {
+      text.setAttribute("y", 98);
+    }
+
+    text.textContent = "$" + Math.round(circleValues[key]).toLocaleString();
   }
 }
 

@@ -60,7 +60,7 @@ function calcMinValue(data) {
 
 // flannery scaling for circle sizes
 function calcPropRadius(attValue) {
-  var minRadius = 6;
+  var minRadius = 8;
   var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
   return radius;
 }

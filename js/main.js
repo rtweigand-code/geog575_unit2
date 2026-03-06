@@ -1,5 +1,5 @@
 /* Lab 1 - Big Ten athletic revenue map
-   proportional symbols + retrieve + sequence + clean prop symbol legend */
+   proportional symbols + retrieve + sequence + legends */
 
 var map;
 var attributes = [];
@@ -11,18 +11,15 @@ var currentAttribute;
 // set up the map
 function createMap() {
 
-  // center on the U.S. since the schools are spread across the conference footprint
   map = L.map("map", {
     center: [40, -96],
     zoom: 4
   });
 
-  // light basemap so the circles stand out better
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
   }).addTo(map);
 
-  // get the revenue data
   getData();
 }
 
@@ -60,7 +57,7 @@ function calcMinValue(data) {
 
 // flannery scaling for circle sizes
 function calcPropRadius(attValue) {
-  var minRadius = 10;
+  var minRadius = 12;
   var radius = 1.0083 * Math.pow(attValue / minValue, 0.5715) * minRadius;
   return radius;
 }
@@ -154,7 +151,6 @@ function createSequenceControls(attributes) {
         '<input class="range-slider" type="range">' +
         '<button class="step" id="forward" title="Next year">&#9654;</button>';
 
-      // stop map from dragging when using slider/buttons
       L.DomEvent.disableClickPropagation(container);
       L.DomEvent.disableScrollPropagation(container);
 
@@ -211,13 +207,13 @@ function createLegend(initialAttribute) {
         '</div>' +
         '<div class="symbol-legend">' +
           '<div class="legend-title">Athletic Revenue</div>' +
-          '<svg id="attribute-legend" width="240" height="140">' +
-            '<circle class="legend-circle" id="max" cx="60"/>' +
-            '<circle class="legend-circle" id="mean" cx="60"/>' +
-            '<circle class="legend-circle" id="min" cx="60"/>' +
-            '<text id="max-text" x="120" y="35"></text>' +
-            '<text id="mean-text" x="120" y="65"></text>' +
-            '<text id="min-text" x="120" y="95"></text>' +
+          '<svg id="attribute-legend" width="280" height="170">' +
+            '<circle class="legend-circle" id="max" cx="80"/>' +
+            '<circle class="legend-circle" id="mean" cx="80"/>' +
+            '<circle class="legend-circle" id="min" cx="80"/>' +
+            '<text id="max-text" x="145" y="40"></text>' +
+            '<text id="mean-text" x="145" y="80"></text>' +
+            '<text id="min-text" x="145" y="120"></text>' +
           '</svg>' +
         '</div>';
 
@@ -242,28 +238,16 @@ function updateLegend(attribute) {
 
   var circleValues = getCircleValues(attribute);
 
-  // keep circles stacked from one baseline like a normal proportional symbol legend
-  var bottom = 110;
-
   for (var key in circleValues) {
     var radius = calcPropRadius(circleValues[key]);
-    var cy = bottom - radius;
+    var cy = 130 - radius;
 
     var circle = document.getElementById(key);
     circle.setAttribute("cy", cy);
     circle.setAttribute("r", radius);
 
     var text = document.getElementById(key + "-text");
-
-    // manually place labels so they read cleanly
-    if (key === "max") {
-      text.setAttribute("y", 38);
-    } else if (key === "mean") {
-      text.setAttribute("y", 68);
-    } else if (key === "min") {
-      text.setAttribute("y", 98);
-    }
-
+    text.setAttribute("y", cy + 5);
     text.textContent = "$" + Math.round(circleValues[key]).toLocaleString();
   }
 }

@@ -76,11 +76,11 @@ footer {
 
 /* legend */
 .legend-control-container {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 12px 14px;
+  background: rgba(255,255,255,0.95);
+  padding: 14px 16px;
   border-radius: 6px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-  min-width: 190px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  min-width: 260px;
 }
 
 .temporal-legend {
@@ -109,6 +109,6 @@ footer {
 }
 
 #attribute-legend text {
-  font-size: 12px;
+  font-size: 13px;
   fill: #222;
 }

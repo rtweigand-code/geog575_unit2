@@ -260,15 +260,20 @@ function updateLegend(attribute) {
     low: "text-low"
   };
 
-  var positions = {
-    top: 40,
-    mid: 85,
-    low: 130
-  };
+  // start stacking from the bottom of the SVG
+  var bottom = 140;
+  var spacing = 10; // space between circles
 
-  for (var key in legendValues) {
-    var radius = calcPropRadius(legendValues[key]);
-    var cy = positions[key];
+  // keep track of previous circle top
+  var lastTop = bottom;
+
+  for (var key of ["low", "mid", "top"]) {
+
+    var value = legendValues[key];
+    var radius = calcPropRadius(value);
+
+    // position each circle so it sits above the previous one
+    var cy = lastTop - radius;
 
     var circle = document.getElementById(circleIDs[key]);
     circle.setAttribute("cy", cy);
@@ -276,7 +281,10 @@ function updateLegend(attribute) {
 
     var text = document.getElementById(textIDs[key]);
     text.setAttribute("y", cy + 5);
-    text.textContent = "$" + (legendValues[key] / 1000000) + "M";
+    text.textContent = "$" + (value / 1000000) + "M";
+
+    // update top of stack for next circle
+    lastTop = cy - radius - spacing;
   }
 }
 

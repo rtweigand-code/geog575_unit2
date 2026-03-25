@@ -13,7 +13,13 @@ function createMap() {
 
   map = L.map("map", {
     center: [40, -96],
-    zoom: 4
+    zoom: 4,
+    minZoom: 3,
+    maxZoom: 7,
+    maxBounds: [
+      [20, -130],  // southwest
+      [55, -60]    // northeast
+    ]
   });
 
   // light basemap so the circles stand out better

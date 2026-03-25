@@ -99,6 +99,9 @@ function pointToLayer(feature, latlng, attributes) {
 
   var layer = L.circleMarker(latlng, options);
 
+  // show school name on hover
+  layer.bindTooltip(props.Name);
+
   var popupContent = buildPopupContent(props, attribute);
 
   layer.bindPopup(popupContent, {

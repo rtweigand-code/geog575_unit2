@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Basic page setup -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Big Ten Athletic Revenue Map</title>
 
+    <!-- Leaflet stylesheet -->
     <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+
+    <!-- Custom page styling -->
     <link rel="stylesheet" href="css/style.css" />
   </head>
 
   <body>
     <div id="wrapper">
+      <!-- Page title and short map description -->
       <header>
         <h1>Big Ten Athletic Revenue, 2015–2024</h1>
         <p>
           This map shows total athletic department revenue for 16 public Big Ten universities from 2015–2024. By adjusting the time slider, users can compare how
-          revenue levels vary between programs and how those differences have shifted during a period of major changes in college athletics.
+          revenue levels vary between programs and how those differences have shifted during a period of major changes in college athletics, including new media rights deals,
+          conference realignment, and the NIL era.
         </p>
       </header>
 
+      <!-- Main map container -->
       <div id="map"></div>
 
+      <!-- Data source / credits -->
       <footer>
         <p>
           Data source: Knight-Newhouse College Athletics Database. Basemap: CARTO / OpenStreetMap.
@@ -28,7 +36,10 @@
       </footer>
     </div>
 
+    <!-- Leaflet library -->
     <script src="lib/leaflet/leaflet-src.js"></script>
+
+    <!-- Main lab script -->
     <script src="js/main.js"></script>
   </body>
 </html>

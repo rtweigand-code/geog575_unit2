@@ -1,6 +1,12 @@
 /* Lab 1 - Big Ten athletic revenue map
    proportional symbols + retrieve + sequence + legends */
 
+// global variables used across the map
+var map;
+var attributes = [];
+var minValue;
+var schoolsLayer;
+var currentAttribute;
 var map;
 var attributes = [];
 var minValue;
@@ -9,6 +15,7 @@ var currentAttribute;
 
 
 // set up the map
+// initialize the Leaflet map and add basemap
 function createMap() {
 
   map = L.map("map", {

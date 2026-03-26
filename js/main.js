@@ -261,7 +261,7 @@ function updateLegend(attribute) {
   };
 
   // start stacking from the bottom of the SVG
-  var bottom = 140;
+  var bottom = 165;
   var spacing = 10; // space between circles
 
   // keep track of previous circle top

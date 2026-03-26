@@ -27,7 +27,7 @@ The feedback noted that the map did not clearly prompt users to think about what
 Just to note when choosing the topic and ultimately working with and visualizing the data I wasn't overly impressed with the results or they at least didn't quite meet my expectations. While spatiotemporal patterns are still present they aren't very distingushed. Which basically has made it somehwat difficult trying to get the most out of the data design. 
 
 To address this:
-- I revised the map description to highlight possible drivers such as media rights deals, NIL, COVID Era...etc
+- I revised the map description to highlight possible drivers such as media rights deals, NIL, COVID Era, etc over specific time periods to help users recognize patterns.
 - I added hover tooltips to make it easier to quickly identify schools without clicking each symbol
 
 These changes help guide the user toward interpreting patterns rather than just viewing the data.

@@ -1,3 +1,4 @@
+/* basic page styling */
 html, body {
   margin: 0;
   padding: 0;
@@ -6,21 +7,25 @@ html, body {
   color: #222;
 }
 
+/* center content and limit width */
 #wrapper {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
 }
 
+/* header spacing */
 header {
   padding: 18px 24px 8px 24px;
 }
 
+/* title styling */
 header h1 {
   margin: 0 0 8px 0;
   font-size: 28px;
 }
 
+/* description text styling */
 header p {
   margin: 0;
   max-width: 900px;
@@ -28,6 +33,7 @@ header p {
   font-size: 15px;
 }
 
+/* main map container */
 #map {
   height: 78vh;
   width: 100%;
@@ -35,18 +41,19 @@ header p {
   border-bottom: 1px solid #ddd;
 }
 
+/* footer styling */
 footer {
   padding: 10px 24px 18px 24px;
   font-size: 13px;
   color: #555;
 }
 
-/* popup text */
+/* popup text spacing */
 .leaflet-popup-content p {
   margin: 0.25em 0;
 }
 
-/* slider control inside map */
+/* slider control container */
 .sequence-control-container {
   background: rgba(255, 255, 255, 0.95);
   padding: 8px 10px;
@@ -57,10 +64,12 @@ footer {
   gap: 10px;
 }
 
+/* slider bar */
 .range-slider {
   width: 140px;
 }
 
+/* forward/back buttons */
 .step {
   width: 34px;
   height: 30px;
@@ -70,11 +79,12 @@ footer {
   font-size: 16px;
 }
 
+/* button hover effect */
 .step:hover {
   background: #f0f0f0;
 }
 
-/* legend */
+/* legend container */
 .legend-control-container {
   background: rgba(255,255,255,0.95);
   padding: 14px 18px;
@@ -83,31 +93,37 @@ footer {
   min-width: 250px;
 }
 
+/* year label in legend */
 .temporal-legend {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
+/* legend text */
 .symbol-legend {
   font-size: 14px;
 }
 
+/* legend title */
 .legend-title {
   font-weight: bold;
   margin-bottom: 8px;
 }
 
+/* svg container for legend circles */
 #attribute-legend {
   overflow: visible;
 }
 
+/* proportional symbol styling */
 .legend-circle {
   fill: #c8102e;
   fill-opacity: 0.8;
   stroke: #111;
 }
 
+/* legend labels */
 #attribute-legend text {
   font-size: 14px;
   fill: #222;

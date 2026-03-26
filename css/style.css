@@ -16,21 +16,26 @@ html, body {
 
 /* header spacing */
 header {
-  padding: 18px 24px 8px 24px;
+  padding: 18px 24px 12px 24px; /* a little more space below */
 }
 
-/* title styling */
+/* title styling (leave this unchanged) */
 header h1 {
   margin: 0 0 8px 0;
   font-size: 28px;
 }
 
-/* description text styling */
+/* description text styling (cleaner spacing) */
 header p {
-  margin: 0;
-  max-width: 900px;
+  margin: 0 0 10px 0;     /* adds space between paragraphs */
+  max-width: 800px;       /* keeps text from stretching too wide */
   line-height: 1.5;
   font-size: 15px;
+}
+
+/* second paragraph slightly muted */
+header p:last-of-type {
+  color: #555;
 }
 
 /* main map container */
